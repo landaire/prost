@@ -50,14 +50,12 @@ where
         return Err(DecodeError::new("invalid varint"));
     }
 
-    let byte = bytes[0];
-    if byte < 0x80 {
-        buf.advance(1);
-        Ok(u64::from(byte))
-    } else {
+    if len == buf.remaining() {
         let (value, advance) = decode_varint_slice(bytes)?;
         buf.advance(advance);
         Ok(value)
+    } else {
+        decode_varint_slow(buf)
     }
 }
 
